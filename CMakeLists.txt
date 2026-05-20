@@ -4,6 +4,9 @@ project(webtop)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
+set(CMAKE_BUILD_TYPE "DEBUG")
+
 
 include(FetchContent)
 FetchContent_Declare(

@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <ranges>
 #include <iostream>
+#include <sstream>
 
 namespace fs = std::filesystem;
 
@@ -16,28 +17,15 @@ void ProcMonitor::updateInfo() {
         readProc(pid);
         std::cout << proc_info_ << std::endl;
     }
+    std::cout << "\n" << '-' * 60 << std::endl;
 }
 
 void ProcMonitor::readProc(pid_t pid) {
     std::ifstream file(std::string("/proc/") + std::to_string(pid) + "/stat");
-    file >> proc_info_.pid;
+    std::string info_line;
+    std::getline(file, info_line);
 
-    std::string cmd_with_brackets;
-    file >> cmd_with_brackets;
-    if (cmd_with_brackets.size() > 2) {
-        proc_info_.command = cmd_with_brackets.substr(1, cmd_with_brackets.size() - 2);
-    }
-    else {
-        throw std::out_of_range(std::string("Too short cmd name: ") + "'" + cmd_with_brackets + "'");
-    }
-    
-    char st;
-    file >> st;
-    proc_info_.state = char_to_state[st];
-
-    
-
-
+    parseProcLine(info_line);
 }
 
 std::vector<pid_t> ProcMonitor::iterateProcesses() {
@@ -54,4 +42,40 @@ std::vector<pid_t> ProcMonitor::iterateProcesses() {
         }
     }
     return pids;
+}
+
+void ProcMonitor::parseProcLine(const std::string& info_line) {
+    auto open_br = info_line.find('(');
+    auto close_br = info_line.rfind(')');
+
+    if (open_br == std::string::npos || close_br == std::string::npos) return;
+
+    proc_info_.pid = std::stoi(info_line.substr(0, open_br));
+    proc_info_.command = info_line.substr(open_br, close_br - open_br + 1);
+
+    parseRestLine(info_line, close_br + 1);
+    
+}
+
+void ProcMonitor::parseRestLine(const std::string& info_line, std::size_t start_pos) {
+    auto rest = info_line.substr(start_pos);
+
+    std::istringstream iss(rest);
+    
+    proc_info_.state = char_to_state.at(read_from_stream<char>(iss));
+
+    skip_fields(iss, 10);
+
+    auto utime = read_from_stream<unsigned long>(iss);  // 14
+    auto stime = read_from_stream<unsigned long>(iss);  // 15
+    proc_info_.cpu_ticks = utime + stime;
+
+    skip_fields(iss, 2);
+
+    proc_info_.priority = read_from_stream<uint64_t>(iss); // 18
+    proc_info_.nice = read_from_stream<uint64_t>(iss);     // 19
+
+    skip_fields(iss, 3);
+
+    proc_info_.virt = read_from_stream<int>(iss);   // 23
 }
