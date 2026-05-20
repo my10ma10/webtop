@@ -12,3 +12,10 @@
 - %MEM: Shows the Memory usage of task.
 - TIME+: CPU Time, the same as ‘TIME’, but reflecting more granularity through hundredths of a second.
 - COMMAND: The name of the command that started the process.
+
+
+| Основа - чтение данных из `proc/` и `sys/`  
+
+## Структура 
+- Monitor engine - основа и ядро обработки данных от системы
+- Serializer - единый интерфейс для де- сериализации данных в JSON

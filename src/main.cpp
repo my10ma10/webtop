@@ -1,48 +1,34 @@
-// #define WSL_DEV
-#ifdef WSL_DEV
-
-#include <webui.h>
-#include <cstdio>
-
-void my_handler(webui_event_t *e) {
-
-}
-
-int main() {
-    auto win = webui_new_window();
-    
-    // Запускаем только сервер, без авто-открытия браузера
-    const char* url = webui_start_server(win, "html/index.html");
-
-    webui_set_config(multi_client, true);
-    webui_set_config(use_cookies, false);
-    
-    if (url) {
-        printf("Откройте в браузере Windows: %s\n", url);
-        webui_open_url(url);
-    }
-    
-    webui_wait();
-    return 0;
-}
-
-#else
 #include <webui.hpp>
+#include <chrono>
+#include <thread>
+#include <stdexcept>
+#include <iostream>
+
+#include "moditor_engine/monitor_engine.hpp"
 
 int main() {
+    try {
+        webui::window my_window;
 
-    webui::window my_window;
+        webui::set_config(multi_client, true);
 
-    webui::set_config(multi_client, true);
+        my_window.show_browser(
+            "html/index.html",
+            Firefox
+        );
+        ProcMonitor monitor;
 
-    my_window.show_browser(
-        "html/index.html",
-        Firefox
-    );
+        std::thread([&](){
+            while (true) {
+                monitor.updateInfo();
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        }).detach();
 
-    webui::wait();
-
-    return 0;
+        webui::wait();
+        return 0;
+    }
+    catch (const std::exception& ex) {
+        std::cout << ex.what() << std::endl;
+    }
 }
-
-#endif // WSL_DEV
