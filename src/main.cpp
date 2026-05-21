@@ -8,24 +8,24 @@
 
 int main() {
     try {
-        webui::window my_window;
+        // webui::window my_window;
 
-        webui::set_config(multi_client, true);
+        // webui::set_config(multi_client, true);
 
-        my_window.show_browser(
-            "html/index.html",
-            Firefox
-        );
-        ProcMonitor monitor;
+        // my_window.show_browser(
+        //     "html/index.html",
+        //     Firefox
+        // );
+        SystemMonitor monitor;
 
-        std::thread([&](){
+        // std::thread([&](){
             while (true) {
-                monitor.updateInfo();
+                monitor.collect();
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
-        }).detach();
+        // }).detach();
 
-        webui::wait();
+        // webui::wait();
         return 0;
     }
     catch (const std::exception& ex) {

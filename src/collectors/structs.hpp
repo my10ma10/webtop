@@ -31,15 +31,11 @@ struct CpuUsage {
 };
 
 
-struct MemoryUsage {
-    float usage_persent = 0.0f;
-};
-
 struct MemoryInfo {
     uint64_t total_kb = 0;
     uint64_t used_kb = 0;
     uint64_t available_kb = 0;
     uint64_t free_kb = 0;
 
-    MemoryUsage usage;
+    float usage = 0.0f;
 };

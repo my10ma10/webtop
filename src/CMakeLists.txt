@@ -11,6 +11,17 @@ add_library(memory_collector_lib STATIC
     collectors/memory_collector.cpp
 )
 
+add_library(process_collector_lib STATIC
+    collectors/process_collector.hpp
+    collectors/process_collector.cpp
+)
+
+
+add_library(process_info_lib STATIC
+    process_info/process_info.hpp
+    process_info/process_info.cpp
+)
+
 
 add_executable(webtop
     main.cpp
@@ -21,4 +32,5 @@ target_link_libraries(webtop PRIVATE
     monitor_engine_lib
     cpu_collector_lib
     memory_collector_lib
+    process_collector_lib
 )

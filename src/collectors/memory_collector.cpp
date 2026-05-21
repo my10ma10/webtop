@@ -13,7 +13,7 @@ MemoryInfo MemoryCollector::collect() {
     info.used_kb = info.total_kb - info.available_kb;
 
     if (info.total_kb) {
-        info.usage.usage_persent = 100.0f * static_cast<float>(info.used_kb) 
+        info.usage = 100.0f * static_cast<float>(info.used_kb) 
                         / static_cast<float>(info.total_kb);
     }
     return info;

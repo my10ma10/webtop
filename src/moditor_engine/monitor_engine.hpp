@@ -2,22 +2,33 @@
 #include <string>
 #include <vector>
 
+#include "collectors/structs.hpp"
 #include "process_info/process_info.hpp"
 
-class ProcMonitor {
-    ProcessInfo proc_info_;
+#include "collectors/cpu_collector.hpp"
+#include "collectors/memory_collector.hpp"
+#include "collectors/process_collector.hpp"
+
+struct SystemSnapshot {
+    CpuUsage cpu_usage;
+    MemoryInfo memory_info;
+    std::vector<ProcessInfo> processes;
+};
+
+class SystemMonitor {
+    CpuCollector cpu_collector_;
+    MemoryCollector memory_collector_;
+    ProcessCollector process_collector_;
 
 public:
-    ProcMonitor() = default;
+    SystemMonitor() = default;
+    
+    SystemSnapshot collect();
 
-    void updateInfo();
-
-    void readProc(pid_t pid);
-
-private:    
-    std::vector<pid_t> iterateProcesses();
-
-    void parseProcLine(const std::string& info_line);
-    void parseRestLine(const std::string& info_line, std::size_t start_pos);
-
+private: 
+    SystemSnapshot makeSystemSnapshot(
+        CpuUsage cpu, 
+        MemoryInfo mem, 
+        std::vector<ProcessInfo> processes
+    );
 };
