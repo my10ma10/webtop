@@ -1,20 +1,13 @@
 #pragma once
 #include <unordered_map>
 #include <string>
-#include <vector>
 #include <cstdint>
 #include <unistd.h>
 #include <sys/types.h>
 #include <algorithm>
 
-struct CpuCoreUsage {
-    float usage_percent;
-};
+#include "collectors/cpu_structs.hpp"
 
-struct CpuUsage {
-    float total;
-    std::vector<CpuCoreUsage> cores;
-};
 
 struct MemoryUsage {
     uint64_t total;

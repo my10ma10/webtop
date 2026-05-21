@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "stream_manage.hpp"
+
 namespace fs = std::filesystem;
 
 void ProcMonitor::updateInfo() {
@@ -54,7 +56,6 @@ void ProcMonitor::parseProcLine(const std::string& info_line) {
     proc_info_.command = info_line.substr(open_br, close_br - open_br + 1);
 
     parseRestLine(info_line, close_br + 1);
-    
 }
 
 void ProcMonitor::parseRestLine(const std::string& info_line, std::size_t start_pos) {
@@ -62,20 +63,20 @@ void ProcMonitor::parseRestLine(const std::string& info_line, std::size_t start_
 
     std::istringstream iss(rest);
     
-    proc_info_.state = char_to_state.at(read_from_stream<char>(iss));
+    proc_info_.state = char_to_state.at(stream::readStream<char>(iss));
 
-    skip_fields(iss, 10);
+    stream::skipFields(iss, 10);
 
-    auto utime = read_from_stream<unsigned long>(iss);  // 14
-    auto stime = read_from_stream<unsigned long>(iss);  // 15
+    auto utime = stream::readStream<unsigned long>(iss);  // 14
+    auto stime = stream::readStream<unsigned long>(iss);  // 15
     proc_info_.cpu_ticks = utime + stime;
 
-    skip_fields(iss, 2);
+    stream::skipFields(iss, 2);
 
-    proc_info_.priority = read_from_stream<uint64_t>(iss); // 18
-    proc_info_.nice = read_from_stream<uint64_t>(iss);     // 19
+    proc_info_.priority = stream::readStream<uint64_t>(iss); // 18
+    proc_info_.nice = stream::readStream<uint64_t>(iss);     // 19
 
-    skip_fields(iss, 3);
+    stream::skipFields(iss, 3);
 
-    proc_info_.virt = read_from_stream<int>(iss);   // 23
+    proc_info_.virt = stream::readStream<int>(iss);   // 23
 }
