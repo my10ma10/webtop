@@ -1,5 +1,5 @@
 #pragma once
-#include "cpu_structs.hpp"
+#include "structs.hpp"
 
 /**
  * @class Собирает состояние CPU и сравнивает с предыдущим для вычисления загруженности CPU

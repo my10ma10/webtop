@@ -6,14 +6,7 @@
 #include <sys/types.h>
 #include <algorithm>
 
-#include "collectors/cpu_structs.hpp"
-
-
-struct MemoryUsage {
-    uint64_t total;
-    uint64_t used;
-};
-
+#include "collectors/structs.hpp"
 
 enum class ProcessState {
     D = 0, // uninterruptible sleep
@@ -50,7 +43,7 @@ struct ProcessInfo {
     int shr; // Shared memory size (kb)
     ProcessState state;
     CpuUsage cpu_usage; 
-    MemoryUsage mem_usage;
+    MemoryInfo mem_usage;
     uint64_t cpu_ticks; // Time/time+ in top
     std::string command;
 

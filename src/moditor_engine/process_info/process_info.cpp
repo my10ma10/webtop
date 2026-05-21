@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, const ProcessInfo& info) {
        << state_to_char.at(info.state) << ' '
        << std::fixed << std::setprecision(1)
        << std::setw(5) << info.cpu_usage.total << ' '
-       << std::setw(5) << info.mem_usage.total << ' '
+       << std::setw(5) << info.mem_usage.total_kb << ' '
        << std::setw(8) << format_cpu_time(info.cpu_ticks)
        << info.command;
     return os;

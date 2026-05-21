@@ -33,8 +33,8 @@ CpuUsage CpuCollector::collect() {
 
         float cpu_usage = 0.0f;
         if (total_delta_time != 0) {
-            cpu_usage = 100.0f *    static_cast<float>(active_delta_time) 
-                                /   static_cast<float>(total_delta_time);
+            cpu_usage = 100.0f * static_cast<float>(active_delta_time) 
+                        / static_cast<float>(total_delta_time);
         }
 
         if (i == 0) {
