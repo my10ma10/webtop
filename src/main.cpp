@@ -22,7 +22,7 @@ int main() {
             frontend_ready = true;
         });
 
-        window.show_browser("index.html", Firefox);
+        window.show("index.html");
 
         FrontendBridge bridge(window);
 
