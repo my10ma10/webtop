@@ -19,5 +19,25 @@ T readStream(Stream& stream) {
 }
 
 
+template <typename Stream> 
+CpuStatSnapshot readCpuStat(Stream& stream);
+
+template <typename Stream>
+CpuStatSnapshot readCpuStat(Stream& stream) {
+    CpuStatSnapshot stat;
+
+    stream >> stat.cpu_name
+       >> stat.user
+       >> stat.nice
+       >> stat.system
+       >> stat.idle
+       >> stat.iowait
+       >> stat.irq
+       >> stat.softirq
+       >> stat.steal;
+
+    return stat;
+}
+
 
 }

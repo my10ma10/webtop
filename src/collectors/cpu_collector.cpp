@@ -79,19 +79,7 @@ std::vector<CpuStatSnapshot> CpuCollector::readStat() {
 CpuStatSnapshot CpuCollector::parseCpuLine(const std::string& line) {
     std::istringstream ss(line);
 
-    CpuStatSnapshot stat;
-
-    ss >> stat.cpu_name
-       >> stat.user
-       >> stat.nice
-       >> stat.system
-       >> stat.idle
-       >> stat.iowait
-       >> stat.irq
-       >> stat.softirq
-       >> stat.steal;
-
-    return stat;
+    return stream::readCpuStat(ss);
 }
 
 uint64_t CpuCollector::totalTime(const CpuStatSnapshot& stat) {

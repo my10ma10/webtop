@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <ranges>
+#include <thread>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -15,6 +16,7 @@ namespace fs = std::filesystem;
 
 std::vector<ProcessInfo> ProcessCollector::collect() {
     auto pids = enumeratePids();
+    uint64_t current_total_cpu_ticks = readTotalCpuTicks();
 
     std::vector<ProcessInfo> infos;
     infos.reserve(pids.size());
@@ -31,7 +33,7 @@ std::vector<ProcessInfo> ProcessCollector::collect() {
                 prev = &it->second;
             }
 
-            infos.push_back(snapshotToInfo(snapshot, prev)); 
+            infos.push_back(snapshotToInfo(snapshot, prev, current_total_cpu_ticks)); 
 
             previous_[pid] = snapshot;
         }
@@ -39,7 +41,7 @@ std::vector<ProcessInfo> ProcessCollector::collect() {
             continue;
         }
     }
-    std::cout << "\n" << std::string(60, '-') << std::endl;
+    previous_total_cpu_ticks_ = current_total_cpu_ticks;
     return infos;
 }
 
@@ -111,7 +113,8 @@ std::string ProcessCollector::uidToUsername(uid_t uid) {
 
 ProcessInfo ProcessCollector::snapshotToInfo(
     const ProcessSnapshot& current, 
-    const ProcessSnapshot* previous
+    const ProcessSnapshot* previous,
+    uint64_t current_total_cpu_ticks
 ) {
     ProcessInfo info;
 
@@ -140,8 +143,6 @@ ProcessInfo ProcessCollector::snapshotToInfo(
 
     info.cpu_usage.total = calculateCpuUsage(current, previous);
 
-
-
     auto it = char_to_state.find(current.state);
     if (it != char_to_state.end()) {
         info.state = it->second;
@@ -153,22 +154,36 @@ ProcessInfo ProcessCollector::snapshotToInfo(
     return info;
 }
 
+uint64_t ProcessCollector::readTotalCpuTicks() {
+    std::ifstream file("/proc/stat");
+    auto st = stream::readCpuStat(file);
+
+    return 
+        st.user + st.nice + 
+        st.system + st.idle + 
+        st.iowait + st.irq + 
+        st.softirq + st.steal;
+}
+
 float ProcessCollector::calculateCpuUsage(
     const ProcessSnapshot& current,
     const ProcessSnapshot* previous
 ) {
-    if (!previous) {
+    if (!previous || previous_total_cpu_ticks_ == 0) {
         return 0.0f;
     }
 
+    uint64_t current_total_cpu_ticks = readTotalCpuTicks();
+
     auto current_ticks = current.utime + current.stime;
     auto previous_ticks = previous->utime + previous->stime;
-    auto delta = current_ticks - previous_ticks;
+    auto process_delta = current_ticks - previous_ticks;
+    auto total_delta = current_total_cpu_ticks - previous_total_cpu_ticks_;
 
-    long hz = sysconf(_SC_CLK_TCK);
+    
 
-    return static_cast<float>(delta) * 100.0f
-           / static_cast<float>(hz);
+    return static_cast<float>(process_delta) * 100.0f * std::thread::hardware_concurrency()
+           / static_cast<float>(total_delta);
 }
 
 ProcessSnapshot ProcessCollector::parseProcLine(const std::string& info_line) {

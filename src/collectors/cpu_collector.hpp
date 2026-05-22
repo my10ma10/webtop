@@ -2,8 +2,7 @@
 #include "structs.hpp"
 
 /**
- * @class Собирает состояние CPU и сравнивает с предыдущим для вычисления загруженности CPU
- * 
+ * @brief Собирает состояние CPU и сравнивает с предыдущим для вычисления загруженности CPU
  */
 class CpuCollector {
     std::vector<CpuStatSnapshot> previous_stats_;
