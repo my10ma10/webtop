@@ -4,7 +4,13 @@
 
 #include <thread>
 
-void StatUpdater::update() {
+StatUpdater::StatUpdater(FrontendBridge& bridge)
+    : frontend_bridge_(bridge)
+{
+}
+
+void StatUpdater::update()
+{
     while (running_) {
         auto snapshot = monitor_.collect();
         auto json = Serializer::serialize(snapshot);

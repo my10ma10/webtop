@@ -5,9 +5,11 @@
 
 class StatUpdater {
     SystemMonitor monitor_;  
-    FrontendBridge frontend_bridge_;
+    FrontendBridge& frontend_bridge_;
     bool running_ = true;
 
 public:
+    StatUpdater(FrontendBridge& bridge);
+
     void update();
 };

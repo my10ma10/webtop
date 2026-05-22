@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WebTop</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <header class="topbar">
+        <h1>WebTop</h1>
+
+        <div class="stats">
+            <div class="stat-card">
+                <span class="label">CPU</span>
+                <span id="cpu-usage">0%</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="label">Memory</span>
+                <span id="memory-usage">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <section class="processes-section">
+
+            <table class="process-table">
+
+                <thead>
+                <tr>
+                    <th>PID</th>
+                    <th>User</th>
+                    <th>Name</th>
+                    <th>CPU %</th>
+                    <th>Memory</th>
+                    <th>State</th>
+                </tr>
+                </thead>
+
+                <tbody id="process-table-body">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
