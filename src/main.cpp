@@ -1,8 +1,7 @@
+#include <thread>
+#include <atomic>
 #include <chrono>
 #include <iostream>
-#include <mutex>
-#include <string>
-#include <thread>
 
 #include <webui.hpp>
 
@@ -10,96 +9,49 @@
 #include "serializer/serializer.hpp"
 #include "system_monitor/system_monitor.hpp"
 
+std::atomic<bool> frontend_ready = false;
+
 int main() {
     try {
-
         webui::set_default_root_folder("frontend");
-        webui::set_config(multi_client, true);
 
-        webui::window main_window;
+        webui::window window;
 
-        main_window.show_browser(
-            "index.html",
-            Firefox
-        );
+        window.bind("frontend_ready", [&](webui_event_t*) {
+            std::cout << "Frontend is ready\n";
+            frontend_ready = true;
+        });
 
-        FrontendBridge bridge(main_window);
+        window.show_browser("index.html", Firefox);
 
-        std::mutex mutex;
+        FrontendBridge bridge(window);
 
-        std::string latest_json;
+        std::thread sender([&]() {
 
-        bool running = true;
-
-        /*
-         * Thread #1
-         * Collect data
-         */
-        std::thread collector([&]() {
+            // ждём frontend один раз
+            while (!frontend_ready) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
 
             SystemMonitor monitor;
 
-            while (running) {
+            while (true) {
 
                 auto snapshot = monitor.collect();
+                auto json = Serializer::serialize(snapshot);
 
-                auto json =
-                    Serializer::serialize(snapshot);
+                bridge.send(json);
 
-                {
-                    std::lock_guard lock(mutex);
-                    latest_json = json;
-                }
-
-                std::this_thread::sleep_for(
-                    std::chrono::seconds(1)
-                );
-            }
-        });
-        
-        std::thread sender([&]() {
-
-            std::this_thread::sleep_for(
-                std::chrono::seconds(2)
-            );
-
-            while (running) {
-
-                std::string json;
-
-                {
-                    std::lock_guard lock(mutex);
-                    json = latest_json;
-                }
-
-                if (!json.empty()) {
-
-                    bridge.send(json);
-
-                    std::cout
-                        << "JSON SENT\n";
-                }
-
-                std::this_thread::sleep_for(
-                    std::chrono::milliseconds(500)
-                );
+                std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         });
 
-        
         webui::wait();
 
-        running = false;
-
-        collector.join();
         sender.join();
-
         return 0;
-    }
-    catch (const std::exception& ex) {
 
-        std::cout
-            << ex.what()
-            << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
 }
