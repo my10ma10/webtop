@@ -6,6 +6,10 @@
 
 #include "stream_manage.hpp"
 
+/**
+ * @brief Собирает статистику, сравнивает с предыдущей, 
+ * вычисляет разницу между previous и current и сохраняет новую статистику 
+ */
 CpuUsage CpuCollector::collect() {
     auto current_stats = readStat();
 
@@ -41,7 +45,12 @@ CpuUsage CpuCollector::collect() {
             usage.total = cpu_usage;
         }
         else {
+            id_t core_id = current_stats.at(i).cpu_name.back();
+            if (!::isdigit(core_id)) {
+                throw std::runtime_error("Parse /proc/stat error");
+            }
             usage.cores.push_back(CpuCoreUsage{
+                .core_id = core_id,
                 .usage_percent = cpu_usage
             });
         }
@@ -67,10 +76,6 @@ std::vector<CpuStatSnapshot> CpuCollector::readStat() {
     return stats;
 }
 
-/**
- * @brief Собирает статистику, сравнивает с предыдущей, 
- * вычисляет разницу между previous и current и сохраняет новую статистику 
- */
 CpuStatSnapshot CpuCollector::parseCpuLine(const std::string& line) {
     std::istringstream ss(line);
 

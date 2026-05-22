@@ -2,18 +2,10 @@
 #include <string>
 #include <vector>
 
-#include "collectors/structs.hpp"
-#include "process_info/process_info.hpp"
-
 #include "collectors/cpu_collector.hpp"
 #include "collectors/memory_collector.hpp"
 #include "collectors/process_collector.hpp"
-
-struct SystemSnapshot {
-    CpuUsage cpu_usage;
-    MemoryInfo memory_info;
-    std::vector<ProcessInfo> processes;
-};
+#include "system_snapshot.hpp"
 
 class SystemMonitor {
     CpuCollector cpu_collector_;

@@ -22,11 +22,11 @@ add_library(process_info_lib STATIC
     process_info/process_info.cpp
 )
 
-add_library(serializer STATIC
+add_library(serializer_lib STATIC
     serializer/serializer.hpp    
     serializer/serializer.cpp
 )
-target_link_libraries(serializer
+target_link_libraries(serializer_lib
     nlohmann_json
 )
 
@@ -41,4 +41,5 @@ target_link_libraries(webtop PRIVATE
     cpu_collector_lib
     memory_collector_lib
     process_collector_lib
+    serializer_lib
 )

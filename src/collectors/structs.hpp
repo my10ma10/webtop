@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <optional>
 #include <cstdint>
 
 /*
@@ -22,6 +23,7 @@ struct CpuStatSnapshot {
 };
 
 struct CpuCoreUsage {
+    std::optional<id_t> core_id;
     float usage_percent = 0.0f;
 };
 
@@ -37,5 +39,5 @@ struct MemoryInfo {
     uint64_t available_kb = 0;
     uint64_t free_kb = 0;
 
-    float usage = 0.0f;
+    float usage_percent = 0.0f;
 };
