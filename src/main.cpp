@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "moditor_engine/monitor_engine.hpp"
+#include "system_monitor/system_monitor.hpp"
 
 int main() {
     try {

@@ -1,4 +1,4 @@
-#include "monitor_engine.hpp"
+#include "system_monitor.hpp"
 
 SystemSnapshot SystemMonitor::collect() {
     auto cpu = cpu_collector_.collect();
@@ -13,5 +13,5 @@ SystemSnapshot SystemMonitor::makeSystemSnapshot(
     MemoryInfo mem, 
     std::vector<ProcessInfo> processes
 ) {
-    return SystemSnapshot();
+    return SystemSnapshot{cpu, mem, processes};
 }

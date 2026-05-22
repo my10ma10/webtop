@@ -1,5 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/src)
-add_subdirectory(moditor_engine)
+add_subdirectory(system_monitor)
 
 add_library(cpu_collector_lib STATIC
     collectors/cpu_collector.hpp
@@ -22,6 +22,14 @@ add_library(process_info_lib STATIC
     process_info/process_info.cpp
 )
 
+add_library(serializer STATIC
+    serializer/serializer.hpp    
+    serializer/serializer.cpp
+)
+target_link_libraries(serializer
+    nlohmann_json
+)
+
 
 add_executable(webtop
     main.cpp
@@ -29,7 +37,7 @@ add_executable(webtop
 target_link_libraries(webtop PRIVATE 
     webui
     process_info_lib
-    monitor_engine_lib
+    system_monitor_lib
     cpu_collector_lib
     memory_collector_lib
     process_collector_lib
