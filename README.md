@@ -1,27 +1,80 @@
 # Webtop
 
-## Метрики в оригинальном `top`
-- PID: Shows task’s unique process id.
-- USER: User name of owner of task.
-- PR: The process’s priority. The lower the number, the higher the priority.
-- NI: Represents a Nice Value of task. A Negative nice value implies higher priority, and positive Nice value means lower priority.
-- VIRT: Total virtual memory used by the task.
-- RES: How much physical RAM the process is using, measured in kilobytes.
-- SHR: Represents the Shared Memory size (kb) used by a task.
-- %CPU: Represents the CPU usage.
-- %MEM: Shows the Memory usage of task.
-- TIME+: CPU Time, the same as ‘TIME’, but reflecting more granularity through hundredths of a second.
-- COMMAND: The name of the command that started the process.
+**Webtop** — программа мониторинга состояние системы Linux с отображением статистики в браузере, реализованная через WebUI
+
+Аналоги: `top`, `htop`
+
+Основной источник данных — виртуальные файлы в `/proc` системы Linux.
+
+## Архитектура
+
+В проекте разделяется ответственность между модулями сбора данных, их сериализацией и отображением в браузере.
+
+### Основные компоненты
+
+#### `SystemMonitor`
+
+* Центральный компонент системы. Отвечает за координацию сборщиков данных (collector'ов), агрегацию SystemSnapshot, формирование итоговой структуры состояния системы
 
 
-| Основа - чтение данных из `proc/` и `sys/`  
+#### `ProcessCollector`
 
-## Структура 
+* Отвечает за сбор информации о процессах
+* Источник данных - `/proc/[pid]/stat`
 
-Приложение состоит из нескольких классов
 
-- SystemMonitor - основа и ядро обработки данных от системы
-    - ProcessCollector 
-    - CpuCollector 
-    - MemoryCollector 
-- Serializer - единый интерфейс для де- сериализации данных в JSON
+#### `CpuCollector`
+
+* Отвечает за получение информации о загрузке CPU
+* Источник данных - `/proc/stat`
+
+
+#### `MemoryCollector`
+
+* Отвечает за состояние памяти
+* Источник данных - `/proc/meminfo`
+
+
+#### `Serializer`
+
+* Унифицированный слой сериализации данных из структур в JSON для передачи фронтенду
+* Реализация основана на `nlohmann/json`.
+
+
+## Формат данных 
+
+* В программе
+    * Структуры ([здесь](src/collectors/structs.hpp) и [здесь](src/process_info/process_info.hpp))
+* При передаче во фронтенд - JSON
+    * Смотреть в [docs/json_format.md](docs/json_format.md)
+
+
+## Требования
+
+* Linux
+* C++20+
+* CMake 3.16+
+* Наличие браузера
+
+
+## Зависимости
+
+* [webui](https://github.com/webui-dev/webui.git)
+* [nlohmann/json](https://github.com/nlohmann/json)
+
+
+## Сборка
+
+```bash
+cmake -S . -B build
+cmake --build build
+```
+
+## Запуск
+
+```bash
+./build/src/webtop
+```
+
+
+
