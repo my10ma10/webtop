@@ -1,4 +1,5 @@
 #include "frontend_bridge.hpp"
+#include <iostream>
 
 FrontendBridge::FrontendBridge(webui::window& window)
     : window_(window)

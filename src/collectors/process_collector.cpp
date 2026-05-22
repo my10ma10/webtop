@@ -181,7 +181,7 @@ ProcessSnapshot ProcessCollector::parseProcLine(const std::string& info_line) {
 
     ProcessSnapshot snapshot;
     snapshot.pid = std::stoi(info_line.substr(0, open_br));
-    snapshot.command = info_line.substr(open_br - 1, close_br - open_br - 1);
+    snapshot.command = info_line.substr(open_br + 1, close_br - open_br - 1);
 
     parseRestLine(info_line, close_br + 1, snapshot);
     return snapshot;
