@@ -1,11 +1,8 @@
-#include <webui.hpp>
-#include <chrono>
 #include <thread>
 #include <stdexcept>
 #include <iostream>
 
-#include "system_monitor/system_monitor.hpp"
-#include "serializer/serializer.hpp"
+#include "stat_updater/stat_updater.hpp"
 
 int main() {
     try {
@@ -17,16 +14,11 @@ int main() {
         //     "html/index.html",
         //     Firefox
         // );
-        SystemMonitor monitor;
-
-        // std::thread([&](){
-            while (true) {
-                auto system_snapshot = monitor.collect();
-                std::cout << Serializer::serialize(system_snapshot) << std::endl;
-
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-            }
-        // }).detach();
+        
+        StatUpdater updater;
+        std::thread([&]() {
+            updater.update();
+        }).detach();
 
         // webui::wait();
         return 0;
