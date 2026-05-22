@@ -57,6 +57,7 @@ target_link_libraries(stat_updater_lib
 add_executable(webtop
     main.cpp
 )
-target_link_libraries(webtop PRIVATE =
+target_link_libraries(webtop PRIVATE 
     stat_updater_lib
+    frontend_bridge_lib
 )
