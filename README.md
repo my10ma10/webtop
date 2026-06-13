@@ -1,5 +1,3 @@
-# Webtop
-
 **Webtop** — программа мониторинга состояние системы Linux с отображением статистики в браузере, реализованная через WebUI
 
 Аналоги: `top`, `htop`
@@ -76,5 +74,10 @@ cmake --build build
 ./build/src/webtop
 ```
 
+## Работа утилиты 
+
+Скриншот работы программы
+
+<img width="1252" height="447" alt="image" src="https://github.com/user-attachments/assets/e5620645-caf0-4cb2-80f3-07aae7b830a8" />
 
 
